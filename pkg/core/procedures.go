@@ -6,7 +6,7 @@ type BlockchainInfo struct {
 	Blocks int `json:"blocks"`
 }
 
-func GetBlockchainInfo(btcClient *Client) (BlockchainInfo, error) {
+func CallBlockchainInfo(btcClient *Client) (BlockchainInfo, error) {
 	result, err := btcClient.Call("getblockchaininfo", nil)
 	if err != nil {
 		return BlockchainInfo{}, err

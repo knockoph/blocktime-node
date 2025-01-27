@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"blocktime-node/pkg/core"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -17,9 +20,18 @@ func NotifyClients(sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, 
 	}
 }
 
-func SendPings(sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex) {
+func KeepaliveClients(sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, info *core.Info) {
 	for {
 		time.Sleep(15 * time.Second)
-		NotifyClients(sseClients, sseClientsMu, "ping")
+		blocks, err := info.GetBlocks(false)
+		message := strconv.Itoa(blocks)
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error getting blockchain info: %v\n", err)
+			message = "error"
+			continue
+		}
+
+		NotifyClients(sseClients, sseClientsMu, message)
 	}
 }

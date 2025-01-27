@@ -45,17 +45,17 @@ func main() {
 	}
 
 	// Initialize the Bitcoin Core client
-	btcClient := core.NewClient(*rpcURL, username, password)
+	info := core.NewInfo(*rpcURL, username, password)
 
 	sseClients := make([]http.ResponseWriter, 0)
 	var sseClientsMu sync.Mutex
 
-	go socket.StartUnixSocket(*notifySocket, &sseClients, &sseClientsMu, btcClient)
-	go utils.SendPings(&sseClients, &sseClientsMu)
+	go socket.StartUnixSocket(*notifySocket, &sseClients, &sseClientsMu, info)
+	go utils.KeepaliveClients(&sseClients, &sseClientsMu, info)
 
 	// Handle requests to the root path
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		handlers.HandleRoot(w, r, btcClient, contentFS)
+		handlers.HandleRoot(w, r, contentFS, info)
 	})
 	http.HandleFunc("/events", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleSse(w, r, &sseClients, &sseClientsMu)

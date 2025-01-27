@@ -33,9 +33,6 @@
 
       // Listen for messages from the server
       eventSource.onmessage = function(event) {
-          if (event.data == "ping") {
-              return;
-          }
           // Update the contents of the .block-info div with the event data
           document.querySelector('.block-info p').textContent = event.data;
       };

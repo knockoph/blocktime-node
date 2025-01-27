@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-func StartUnixSocket(socketPath string, sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, btcClient *core.Client) {
+func StartUnixSocket(socketPath string, sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, info *core.Info) {
 	// Remove the socket file if it already exists
 	os.RemoveAll(socketPath)
 
@@ -32,11 +32,11 @@ func StartUnixSocket(socketPath string, sseClients *[]http.ResponseWriter, sseCl
 			continue
 		}
 
-		go handleConnection(conn, sseClients, sseClientsMu, btcClient)
+		go handleConnection(conn, sseClients, sseClientsMu, info)
 	}
 }
 
-func handleConnection(conn net.Conn, sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, btcClient *core.Client) {
+func handleConnection(conn net.Conn, sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, info *core.Info) {
 	defer conn.Close()
 
 	buffer := make([]byte, 1024)
@@ -50,19 +50,19 @@ func handleConnection(conn net.Conn, sseClients *[]http.ResponseWriter, sseClien
 			return
 		}
 
-		message := string(buffer[:n])
-		if message != "notify" {
+		command := string(buffer[:n])
+		if command != "notify" {
 			continue
 		}
 
 		fmt.Println("Notify Clients")
 
-		blockchainInfo, err := core.GetBlockchainInfo(btcClient)
+		blocks, err := info.GetBlocks(true)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error getting blockchain info: %v\n", err)
 			continue
 		}
-		blocks := strconv.Itoa(blockchainInfo.Blocks)
-		utils.NotifyClients(sseClients, sseClientsMu, blocks)
+		message := strconv.Itoa(blocks)
+		utils.NotifyClients(sseClients, sseClientsMu, message)
 	}
 }
