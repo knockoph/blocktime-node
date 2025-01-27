@@ -44,7 +44,7 @@ sudo systemctl start blocktime-node
 sudo systemctl status blocktime-node
 ```
 
-Setup nginx proxy
+Setup nginx proxy:
 
 ```bash
 sudo cp config/nginx/blocktime-node /etc/nginx/sites-available
