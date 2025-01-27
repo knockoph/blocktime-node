@@ -13,11 +13,6 @@ import (
 //go:embed www/*
 var content embed.FS
 
-// BlockchainInfo holds the data to be rendered in the template
-type BlockchainInfo struct {
-	Blocks int `json:"blocks"`
-}
-
 func main() {
 	// Define the host and port flags with default values
 	host := flag.String("host", "localhost", "Host to run the server on")
