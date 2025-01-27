@@ -20,7 +20,7 @@ bitcoin-cli -regtest -generate 101
 Run server:
 
 ```bash
-go run cmd/server/main.go --rpc-cookie-file=$HOME/.bitcoin/regtest/.cookie --rpc-url=http://localhost:18443
+go run cmd/server/main.go --rpc-cookie-file=$HOME/.bitcoin/regtest/.cookie --rpc-url=http://localhost:18443 --notify-socket=/tmp/blocktime-node.sock
 ```
 
 Visit http://localhost:8080
@@ -52,4 +52,25 @@ sudo ln -s /etc/nginx/sites-available/blocktime-node /etc/nginx/sites-enabled
 # edit /etc/nginx/sites-enabled/blocktime-node as required
 sudo nginx -t
 sudo systemctl reload nginx
+```
+
+Create directory for notify socket file:
+
+```bash
+sudo mkdir /var/lib/blocktime-node
+sudo chown bitcoin:bitcoin /var/lib/blocktime-node
+```
+
+Setup block notifications with the `-blocknotify` flag (consider setting `blocknotify` in `bitcoin.conf` instead):
+
+```bash
+# In a production setup remove -regtest flag
+bitcoind -regtest -blocknotify="blocktime-node-notify"
+```
+
+Load wallet and generate some blocks:
+
+```bash
+bitcoin-cli -regtest loadwallet "testwallet"
+bitcoin-cli -regtest -generate 1
 ```

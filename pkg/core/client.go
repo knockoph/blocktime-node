@@ -82,7 +82,6 @@ func (c *Client) Call(method string, params interface{}) (json.RawMessage, error
 	return response.Result, nil
 }
 
-// ReadCookieFile reads the cookie file and returns the username and password
 func ReadCookieFile(cookieFile string) (string, string, error) {
 	data, err := os.ReadFile(cookieFile)
 	if err != nil {

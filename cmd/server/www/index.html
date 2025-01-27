@@ -26,5 +26,24 @@
     <div class="block-info">
         <p>{{.Blocks}}</p>
     </div>
+
+    <script>
+      // Create a new EventSource instance to connect to the /sse endpoint
+      const eventSource = new EventSource('/events');
+
+      // Listen for messages from the server
+      eventSource.onmessage = function(event) {
+          if (event.data == "ping") {
+              return;
+          }
+          // Update the contents of the .block-info div with the event data
+          document.querySelector('.block-info p').textContent = event.data;
+      };
+
+      // Optional: Handle errors
+      eventSource.onerror = function(event) {
+          console.error("EventSource failed:", event);
+      };
+    </script>
 </body>
 </html>

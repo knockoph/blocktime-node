@@ -1,5 +1,7 @@
-APP_NAME = blocktime-node
-SRC = cmd/server/main.go
+APP_NAME_SERVER = blocktime-node
+APP_NAME_NOTIFY = blocktime-node-notify
+SRC_SERVER = cmd/server/main.go
+SRC_NOTIFY = cmd/notify/main.go
 BUILD_DIR = bin
 GO = go
 GOFMT = gofmt
@@ -7,7 +9,8 @@ GOFMT = gofmt
 all: build
 
 build: $(SRC)
-	$(GO) build -o $(BUILD_DIR)/$(APP_NAME) $(SRC)
+	$(GO) build -o $(BUILD_DIR)/$(APP_NAME_SERVER) $(SRC_SERVER)
+	$(GO) build -o $(BUILD_DIR)/$(APP_NAME_NOTIFY) $(SRC_NOTIFY)
 
 test:
 	$(GO) test ./...
@@ -19,10 +22,11 @@ fmt:
 	$(GOFMT) -s -w .
 
 clean:
-	rm $(BUILD_DIR)/$(APP_NAME)
+	rm $(BUILD_DIR)/$(APP_NAME_SERVER)
 
 install:
 	cp bin/blocktime-node /usr/bin
+	cp bin/blocktime-node-notify /usr/bin
 
 help:
 	@echo "Makefile for blocktime-node"
