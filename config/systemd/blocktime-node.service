@@ -1,0 +1,19 @@
+[Unit]
+Description=Blocktime Node
+After=bitcoind.service
+
+[Service]
+ExecStart=/usr/bin/blocktime-node
+User=bitcoin
+Group=bitcoin
+Type=simple
+Restart=always
+
+# Hardening measures
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

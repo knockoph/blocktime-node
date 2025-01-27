@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocktime Node</title>
+    <style>
+        body {
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* White text */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            margin: 0; /* Remove default margin */
+        }
+        .block-info {
+            font-size: 5em; /* Large font size */
+            text-align: center; /* Center text */
+            letter-spacing: 0.1em; /* Slightly increase letter spacing */
+        }
+    </style>
+</head>
+<body>
+    <div class="block-info">
+        <p>{{.Blocks}}</p>
+    </div>
+</body>
+</html>
