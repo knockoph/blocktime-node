@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net"
-	"os"
 )
 
 func main() {
@@ -13,17 +13,15 @@ func main() {
 
 	conn, err := net.Dial("unix", *notifySocket)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error connecting to socket: %v\n", err)
-		os.Exit(1)
+		log.Fatal(fmt.Errorf("error in main: %w", err))
 	}
 	defer conn.Close()
 
 	message := "notify"
 	_, err = conn.Write([]byte(message))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error sending message: %v\n", err)
-		os.Exit(1)
+		log.Fatal(fmt.Errorf("error in main: %w", err))
 	}
 
-	fmt.Println("Message sent:", message)
+	log.Println("message sent:", message)
 }
