@@ -33,6 +33,13 @@ sudo make install
 blocktime-node --help
 ```
 
+Create directory for notify socket file:
+
+```bash
+sudo mkdir /var/lib/blocktime-node
+sudo chown bitcoin:bitcoin /var/lib/blocktime-node
+```
+
 Setup systemd service:
 
 ```bash
@@ -52,13 +59,6 @@ sudo ln -s /etc/nginx/sites-available/blocktime-node /etc/nginx/sites-enabled
 # edit /etc/nginx/sites-enabled/blocktime-node as required
 sudo nginx -t
 sudo systemctl reload nginx
-```
-
-Create directory for notify socket file:
-
-```bash
-sudo mkdir /var/lib/blocktime-node
-sudo chown bitcoin:bitcoin /var/lib/blocktime-node
 ```
 
 Setup block notifications with the `-blocknotify` flag (consider setting `blocknotify` in `bitcoin.conf` instead):
