@@ -11,7 +11,7 @@ import (
 )
 
 func HandleRoot(w http.ResponseWriter, r *http.Request, contentFS fs.FS, info *core.Info) {
-	message, err := utils.Message(info, true)
+	message, err := utils.Message(info, false)
 	if err != nil {
 		log.Println(fmt.Errorf("error in handle root: %w", err))
 	}
