@@ -1,12 +1,15 @@
 package handlers
 
 import (
+	"blocktime-node/pkg/core"
+	"blocktime-node/pkg/utils"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 )
 
-func HandleSse(w http.ResponseWriter, r *http.Request, sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex) {
+func HandleSse(w http.ResponseWriter, r *http.Request, sseClients *[]http.ResponseWriter, sseClientsMu *sync.Mutex, info *core.Info) {
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -16,7 +19,14 @@ func HandleSse(w http.ResponseWriter, r *http.Request, sseClients *[]http.Respon
 	*sseClients = append(*sseClients, w)
 	sseClientsMu.Unlock()
 
-	fmt.Println("SSE Client Connected")
+	log.Println("sse client connected")
+
+	message, err := utils.Message(info, false)
+	if err != nil {
+		log.Println(fmt.Errorf("error in handle sse: %w", err))
+	}
+
+	fmt.Fprintf(w, "data: %s\n\n", message)
 
 	// Keep the connection open
 	<-r.Context().Done()
@@ -29,6 +39,6 @@ func HandleSse(w http.ResponseWriter, r *http.Request, sseClients *[]http.Respon
 			break
 		}
 	}
-	fmt.Println("SSE Client Disconnected")
+	log.Println("sse client disconnected")
 	sseClientsMu.Unlock()
 }

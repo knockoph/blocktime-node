@@ -49,12 +49,12 @@ func (c *Client) Call(method string, params interface{}) (json.RawMessage, error
 		ID:      1,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error in call: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", c.URL, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error in call: %w", err)
 	}
 	req.SetBasicAuth(c.Username, c.Password)
 	req.Header.Set("Content-Type", "application/json")
@@ -62,21 +62,21 @@ func (c *Client) Call(method string, params interface{}) (json.RawMessage, error
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error in call: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("HTTP error: %s", resp.Status)
+		return nil, fmt.Errorf("http error: %s", resp.Status)
 	}
 
 	var response Response
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error in call: %w", err)
 	}
 
 	if response.Error != nil {
-		return nil, fmt.Errorf("RPC error: %s", response.Error.Message)
+		return nil, fmt.Errorf("rpc error: %s", response.Error.Message)
 	}
 
 	return response.Result, nil
@@ -85,7 +85,7 @@ func (c *Client) Call(method string, params interface{}) (json.RawMessage, error
 func ReadCookieFile(cookieFile string) (string, string, error) {
 	data, err := os.ReadFile(cookieFile)
 	if err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("error in read cookie file: %w", err)
 	}
 
 	// The cookie file format is "username:password"

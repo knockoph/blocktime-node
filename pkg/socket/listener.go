@@ -5,10 +5,10 @@ import (
 	"blocktime-node/pkg/utils"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"os"
-	"strconv"
 	"sync"
 )
 
@@ -18,17 +18,17 @@ func StartUnixSocket(socketPath string, sseClients *[]http.ResponseWriter, sseCl
 
 	listener, err := net.Listen("unix", socketPath)
 	if err != nil {
-		fmt.Println("Error starting Unix socket server:", err)
+		log.Println(fmt.Errorf("error in start unix socket: %w", err))
 		return
 	}
 	defer listener.Close()
 
-	fmt.Println("Unix socket server started at", socketPath)
+	log.Println("running unix socket server", socketPath)
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection:", err)
+			log.Println(fmt.Errorf("error in start unix socket: %w", err))
 			continue
 		}
 
@@ -46,7 +46,7 @@ func handleConnection(conn net.Conn, sseClients *[]http.ResponseWriter, sseClien
 			if err == io.EOF {
 				return
 			}
-			fmt.Fprintf(os.Stderr, "Error reading from connection: %v\n", err)
+			log.Println(fmt.Errorf("error in handle connection: %w", err))
 			return
 		}
 
@@ -55,14 +55,13 @@ func handleConnection(conn net.Conn, sseClients *[]http.ResponseWriter, sseClien
 			continue
 		}
 
-		fmt.Println("Notify Clients")
+		message, err := utils.Message(info, true)
 
-		blocks, err := info.GetBlocks(true)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error getting blockchain info: %v\n", err)
-			continue
+			log.Println(fmt.Errorf("error in handle connection: %w", err))
 		}
-		message := strconv.Itoa(blocks)
+
+		log.Println("notify clients")
 		utils.NotifyClients(sseClients, sseClientsMu, message)
 	}
 }

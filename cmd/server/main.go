@@ -7,6 +7,7 @@ import (
 	"blocktime-node/pkg/utils"
 	"embed"
 	"flag"
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -29,7 +30,7 @@ func main() {
 	// Create a file system from the embedded content
 	contentFS, err := fs.Sub(content, "www")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("error in main: %w", err))
 	}
 
 	var username, password string
@@ -40,7 +41,7 @@ func main() {
 	} else {
 		username, password, err = core.ReadCookieFile(*rpcCookieFile)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(fmt.Errorf("error in main: %w", err))
 		}
 	}
 
@@ -58,14 +59,14 @@ func main() {
 		handlers.HandleRoot(w, r, contentFS, info)
 	})
 	http.HandleFunc("/events", func(w http.ResponseWriter, r *http.Request) {
-		handlers.HandleSse(w, r, &sseClients, &sseClientsMu)
+		handlers.HandleSse(w, r, &sseClients, &sseClientsMu, info)
 	})
 
 	// Start the server on the specified host and port
 	address := *host + ":" + *port
-	log.Printf("Starting server on %s\n", address)
+	log.Println("running http server", address)
 	err = http.ListenAndServe(address, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("error in main: %w", err))
 	}
 }

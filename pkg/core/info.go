@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -31,7 +32,7 @@ func (info *Info) GetBlocks(forceUpdate bool) (int, error) {
 
 	result, err := CallBlockchainInfo(info.client)
 	if err != nil {
-		return info.blocks, err
+		return info.blocks, fmt.Errorf("error in get blocks: %w", err)
 	}
 
 	info.blocks = result.Blocks
