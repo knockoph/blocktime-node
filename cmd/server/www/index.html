@@ -28,19 +28,48 @@
     </div>
 
     <script>
-      // Create a new EventSource instance to connect to the /sse endpoint
-      const eventSource = new EventSource('/events');
+        let eventSource;
+        let delayFactor = 0;
+        const maxDelayFactor = 20
+        const baseDelay = 5000; // Base delay in milliseconds
 
-      // Listen for messages from the server
-      eventSource.onmessage = function(event) {
-          // Update the contents of the .block-info div with the event data
-          document.querySelector('.block-info p').textContent = event.data;
-      };
+        function connect() {
+            // Close the previous EventSource if it exists
+            if (eventSource) {
+                eventSource.close();
+            }
 
-      // Optional: Handle errors
-      eventSource.onerror = function(event) {
-          console.error("EventSource failed:", event);
-      };
+            // Create a new EventSource instance to connect to the /events endpoint
+            eventSource = new EventSource('/events');
+
+            // Listen for messages from the server
+            eventSource.onmessage = function(event) {
+                // Update the contents of the .block-info div with the event data
+                document.querySelector('.block-info p').textContent = event.data;
+                // Reset delayFactor on successful connection
+                delayFactor = 0;
+            };
+
+            // Handle errors
+            eventSource.onerror = function(event) {
+                console.error("EventSource failed:", event);
+                // Calculate the delay for the next reconnection attempt
+                const delay = baseDelay * delayFactor;
+                setTimeout(connect, delay); // Reconnect after delay
+                delayFactor = Math.min(delayFactor+1, maxDelayFactor);
+            };
+        }
+
+        // Handle visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                console.log("Tab is active. Reconnecting...");
+                connect(); // Reconnect when the tab becomes active
+            }
+        });
+
+        // Initial connection
+        connect();
     </script>
 </body>
 </html>
