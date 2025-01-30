@@ -57,7 +57,7 @@ Assumptions:
   * is managed by systemd as `bitcoind.service`
   * cookie file is generated at `/var/lib/bitcoind/.cookie`
   * config file is stored at `/etc/bitcoin/bitcoin.conf`
-* nginx is used as reverse proxy
+* nginx is installed and can be used as reverse proxy
 
 Build and install `blocktime-node` and `blocktime-node-notify` commands:
 
@@ -88,7 +88,7 @@ sudo systemctl status blocktime-node
 sudo journalctl -u blocktime-node
 ```
 
-Setup nginx proxy:
+Setup nginx proxy (and consider enabling HTTPS, instructions not included in the sample configuration):
 
 ```bash
 sudo cp config/nginx/blocktime-node /etc/nginx/sites-available
