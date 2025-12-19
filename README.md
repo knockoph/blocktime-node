@@ -1,6 +1,6 @@
 # Blocktime Node
 
-Blocktime Node is a web server that runs alongside bitcoin core to display the node's blocktime in a browser. It supports server-side HTML rendering to display the current blocktime when the web page is loaded or reloaded even if JavaScript is disabled in the browser and in addition supports server-sent events (SSE) for live updates if JavaScript is enabled.
+Blocktime Node is a web server that runs alongside bitcoin core to display the node's blocktime (technically block height) in a browser. It supports server-side HTML rendering to display the current blocktime when the web page is loaded or reloaded even if JavaScript is disabled in the browser and in addition supports server-sent events (SSE) for live updates if JavaScript is enabled.
 
 The service is developed in go without any additional third-party libraries, making it easy to review and deploy.
 
